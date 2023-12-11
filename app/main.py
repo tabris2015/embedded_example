@@ -20,12 +20,13 @@ def run(model: str, camera_id: int, width: int, height: int, has_gui: bool) -> N
     font_size = 1
     font_thickness = 1
     fps_avg_frame_count = 10
-
+    print("Starting video stream...")
     cap = cv2.VideoCapture(camera_id)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
     # instantiate detector
+    print("Calling object detector...")
     detector = MediapipeStreamObjectDetector(model)
 
     # main loop
@@ -68,7 +69,6 @@ def run(model: str, camera_id: int, width: int, height: int, has_gui: bool) -> N
                 vis_image = visualize(current_frame, detector.result_list[0])
                 cv2.imshow("object_detector", vis_image)
             else:
-
                 print(f"{fps_text} \t Detection: {detector.result_list[0].detections[0]}")
             detector.result_list.clear()
 
@@ -118,10 +118,10 @@ def main():
         default=True,
     )
     args = parser.parse_args()
+    print("Starting...")
 
     run(args.model, int(args.cameraId), args.frameWidth, args.frameHeight, args.has_gui)
 
 
 if __name__ == '__main__':
-    print("HELLO")
     main()
