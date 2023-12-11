@@ -1,0 +1,10 @@
+version: "3"
+services:
+  od-camera:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - YOLO_VERSION=yolov8n.pt
+    command:
+      - /bin/bash

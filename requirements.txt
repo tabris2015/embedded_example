@@ -1,0 +1,10 @@
+torch
+torchvision
+ultralytics
+mediapipe
+sqlmodel
+jupyter
+matplotlib
+Pillow
+pydantic
+pydantic-settings
