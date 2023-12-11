@@ -69,7 +69,7 @@ def run(model: str, camera_id: int, width: int, height: int, has_gui: bool) -> N
                 vis_image = visualize(current_frame, detector.result_list[0])
                 cv2.imshow("object_detector", vis_image)
             else:
-                print(f"{fps_text} \t Detection: {detector.result_list[0].detections[0]}")
+                print(f"{fps_text} \t Detections: {detector.result_list[0].n_detections}")
             detector.result_list.clear()
 
         elif has_gui:
@@ -114,8 +114,7 @@ def main():
         "--has_gui",
         help="If we should visualize the predictions on the screen",
         required=False,
-        type=bool,
-        default=True,
+        action=argparse.BooleanOptionalAction
     )
     args = parser.parse_args()
     print("Starting...")

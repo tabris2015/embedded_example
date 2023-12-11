@@ -26,10 +26,8 @@ class MediapipeStreamObjectDetector:
         self.result_list = []
 
     def detection_callback(
-        self, result: DetectionResult, output_image: mp.Image, timestamp_ms: int
+        self, result: DetectionResult, output_image: mp.Image, timestamp_ms: mp.Timestamp
     ):
-        # print(f"detection result: {result}")
-        result.timestamp_ms = timestamp_ms
         boxes = []
         labels = []
         confidences = []
@@ -51,6 +49,6 @@ class MediapipeStreamObjectDetector:
             boxes=boxes,
             labels=labels,
             confidences=confidences,
-            timestamp_ms=int(timestamp_ms),
+            timestamp_ms=timestamp_ms.value,
         )
         self.result_list.append(detection)
