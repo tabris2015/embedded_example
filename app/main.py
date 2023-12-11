@@ -9,7 +9,9 @@ from app.detector import MediapipeStreamObjectDetector
 from app.utils import visualize
 
 
-def run(model: str, camera_id: int, width: int, height: int, has_gui: bool) -> None:
+def run(
+    model: str, camera_id: int, width: int, height: int, has_gui: bool, threshold: float
+) -> None:
     counter = 0
     fps = 0
     start_time = time.time()
@@ -27,7 +29,7 @@ def run(model: str, camera_id: int, width: int, height: int, has_gui: bool) -> N
 
     # instantiate detector
     print("Calling object detector...")
-    detector = MediapipeStreamObjectDetector(model)
+    detector = MediapipeStreamObjectDetector(model, threshold)
 
     # main loop
     while cap.isOpened():
@@ -69,7 +71,14 @@ def run(model: str, camera_id: int, width: int, height: int, has_gui: bool) -> N
                 vis_image = visualize(current_frame, detector.result_list[0])
                 cv2.imshow("object_detector", vis_image)
             else:
-                print(f"{fps_text} \t Detections: {detector.result_list[0].n_detections}")
+                detections_dict = {
+                    label: score
+                    for label, score in zip(
+                        detector.result_list[0].labels,
+                        detector.result_list[0].confidences,
+                    )
+                }
+                print(f"{fps_text} \t Detections: {detections_dict}")
             detector.result_list.clear()
 
         elif has_gui:
@@ -111,16 +120,30 @@ def main():
         default=720,
     )
     parser.add_argument(
+        "--threshold",
+        help="Score threshold for detections.",
+        required=False,
+        type=float,
+        default=0.5,
+    )
+    parser.add_argument(
         "--has_gui",
         help="If we should visualize the predictions on the screen",
         required=False,
-        action=argparse.BooleanOptionalAction
+        action=argparse.BooleanOptionalAction,
     )
     args = parser.parse_args()
     print("Starting...")
 
-    run(args.model, int(args.cameraId), args.frameWidth, args.frameHeight, args.has_gui)
+    run(
+        args.model,
+        int(args.cameraId),
+        args.frameWidth,
+        args.frameHeight,
+        args.has_gui,
+        args.threshold,
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

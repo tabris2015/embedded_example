@@ -11,7 +11,9 @@ TEXT_COLOR = (255, 0, 0)  # red
 
 
 def visualize(image, detection: Detection) -> np.ndarray:
-    for box, label, confidence in zip(detection.boxes, detection.labels, detection.confidences):
+    for box, label, confidence in zip(
+        detection.boxes, detection.labels, detection.confidences
+    ):
         # Draw bounding_box
         start_point = box[0], box[1]
         end_point = box[2], box[3]
