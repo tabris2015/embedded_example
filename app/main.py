@@ -6,6 +6,7 @@ import cv2
 import mediapipe as mp
 
 from app.detector import MediapipeStreamObjectDetector
+from app.pixels_utils import display_pixels
 from app.utils import visualize
 
 
@@ -64,6 +65,8 @@ def run(
                 text_color,
                 font_thickness,
             )
+
+        display_pixels(detector.result_list)
 
         if detector.result_list:
             # print(detector.result_list)
