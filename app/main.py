@@ -71,14 +71,14 @@ def run(
                 vis_image = visualize(current_frame, detector.result_list[0])
                 cv2.imshow("object_detector", vis_image)
             else:
-                detections_dict = {
-                    label: score
+                detections_data = [
+                    (label, score)
                     for label, score in zip(
                         detector.result_list[0].labels,
                         detector.result_list[0].confidences,
                     )
-                }
-                print(f"{fps_text} \t Detections: {detections_dict}")
+                ]
+                print(f"{fps_text} \t Detections: {detections_data}")
             detector.result_list.clear()
 
         elif has_gui:
