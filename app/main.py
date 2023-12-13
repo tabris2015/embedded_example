@@ -16,7 +16,6 @@ engine = create_engine('sqlite:///db.sqlite3')
 SQLModel.metadata.create_all(engine)
 
 
-
 def run(
     model: str, camera_id: int, width: int, height: int, has_gui: bool, threshold: float
 ) -> None:
@@ -81,15 +80,7 @@ def run(
             if has_gui:
                 vis_image = visualize(current_frame, detector.result_list[0])
                 cv2.imshow("object_detector", vis_image)
-            else:
-                detections_data = [
-                    (label, score)
-                    for label, score in zip(
-                        detector.result_list[0].labels,
-                        detector.result_list[0].confidences,
-                    )
-                ]
-                # print(f"{fps_text} \t Detections: {detections_data}")
+
             # save in DB
             current_people_count = len([1 for label in detector.result_list[0].labels if label == "person"])
             print(f"Person count: {current_people_count}")
