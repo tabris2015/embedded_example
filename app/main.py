@@ -1,13 +1,20 @@
 import argparse
 import sys
 import time
+from datetime import datetime
 
 import cv2
 import mediapipe as mp
+from sqlmodel import SQLModel, create_engine, Session
 
 from app.detector import MediapipeStreamObjectDetector
 from app.pixels_utils import display_pixels
 from app.utils import visualize
+from app.models import DetectionEvent, PredictionType
+
+engine = create_engine('sqlite:///db.sqlite3')
+SQLModel.metadata.create_all(engine)
+
 
 
 def run(
@@ -16,6 +23,7 @@ def run(
     counter = 0
     fps = 0
     start_time = time.time()
+    last_people_count = 0
     # Visualization parameters
     row_size = 20  # pixels
     left_margin = 24  # pixels
@@ -81,7 +89,24 @@ def run(
                         detector.result_list[0].confidences,
                     )
                 ]
-                print(f"{fps_text} \t Detections: {detections_data}")
+                # print(f"{fps_text} \t Detections: {detections_data}")
+            # save in DB
+            current_people_count = len([1 for label in detector.result_list[0].labels if label == "person"])
+            print(f"Person count: {current_people_count}")
+            if current_people_count != last_people_count and current_people_count > last_people_count:
+                print(f"======> Saving event!")
+                with Session(engine) as session:
+                    session.add(DetectionEvent(
+                        pred_type=PredictionType.object_detection,
+                        detection_model=detector.detector.__class__.__name__,
+                        architecture="efficientnet-b0",
+                        n_detections=current_people_count,
+                        event_label="person",
+                        timestamp=datetime.now()
+                    ))
+                    session.commit()
+
+            last_people_count = current_people_count
             detector.result_list.clear()
 
         elif has_gui:

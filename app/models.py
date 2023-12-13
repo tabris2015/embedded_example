@@ -28,8 +28,6 @@ class DetectionEvent(SQLModel, table=True):
     pred_type: PredictionType
     detection_model: str
     architecture: str | None = Field(default=None)
-    inference_time_ms: float
     n_detections: int
-    top_detection_label: str
-    top_detection_count: int
+    event_label: str
     timestamp: datetime
