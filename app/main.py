@@ -12,7 +12,7 @@ from app.pixels_utils import display_pixels
 from app.utils import visualize
 from app.models import DetectionEvent, PredictionType
 
-engine = create_engine('sqlite:///db.sqlite3')
+engine = create_engine("sqlite:///db.sqlite3")
 SQLModel.metadata.create_all(engine)
 
 
@@ -82,19 +82,26 @@ def run(
                 cv2.imshow("object_detector", vis_image)
 
             # save in DB
-            current_people_count = len([1 for label in detector.result_list[0].labels if label == "person"])
+            current_people_count = len(
+                [1 for label in detector.result_list[0].labels if label == "person"]
+            )
             print(f"Person count: {current_people_count}")
-            if current_people_count != last_people_count and current_people_count > last_people_count:
+            if (
+                current_people_count != last_people_count
+                and current_people_count > last_people_count
+            ):
                 print(f"======> Saving event!")
                 with Session(engine) as session:
-                    session.add(DetectionEvent(
-                        pred_type=PredictionType.object_detection,
-                        detection_model=detector.detector.__class__.__name__,
-                        architecture="efficientnet-b0",
-                        n_detections=current_people_count,
-                        event_label="person",
-                        timestamp=datetime.now()
-                    ))
+                    session.add(
+                        DetectionEvent(
+                            pred_type=PredictionType.object_detection,
+                            detection_model=detector.detector.__class__.__name__,
+                            architecture="efficientnet-b0",
+                            n_detections=current_people_count,
+                            event_label="person",
+                            timestamp=datetime.now(),
+                        )
+                    )
                     session.commit()
 
             last_people_count = current_people_count
